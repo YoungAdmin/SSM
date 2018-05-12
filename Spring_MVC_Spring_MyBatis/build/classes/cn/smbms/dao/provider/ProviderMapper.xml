@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.smbms.dao.provider.ProviderMapper">
+
+	<!-- 通过条件查询-providerList -->
+	<select id="getProviderList" resultType="Provider">
+		select * from smbms_provider
+		<where>
+			<if test="proCode != null and proCode != ''">
+				and proCode like concat('%',#{proCode},'%')
+			</if>
+			<if test="proName != null and proName != ''">
+				and proName like concat('%',#{proName},'%')
+			</if>
+		</where>
+		order by creationDate limit #{from},#{pageSize} 
+	</select>
+	
+	<!-- 查询用户记录数 -->
+	<select id="getProviderCount" resultType="Integer">
+		select count(*) from smbms_provider
+		<where>
+			<if test="proCode != null and proCode != ''">
+				and proCode like concat('%',#{proCode},'%')
+			</if>
+			<if test="proName != null and proName != ''">
+				and proName like concat('%',#{proName},'%')
+			</if>
+		</where>
+	</select>
+	
+	<!-- 添加供应商  -->
+	<insert id="addProvider" parameterType="Provider">
+		INSERT INTO smbms_provider (proCode, proName, proDesc, proContact, proPhone, proAddress, proFax, createdBy, creationDate,companyLicPicPath,orgCodePicPath)
+ 		VALUES (#{proCode}, #{proName}, #{proDesc}, #{proContact}, #{proPhone}, #{proAddress}, #{proFax}, #{createdBy}, #{creationDate},#{companyLicPicPath},#{orgCodePicPath})
+	</insert>
+	
+	<!-- 更新供应商  -->
+	<update id="updateProvider" parameterType="Provider">
+		UPDATE smbms_provider 
+			<set>
+				<if test="proCode != null">proCode=#{proCode},</if>
+				<if test="proName != null">proName=#{proName},</if>
+				<if test="proDesc != null">proDesc=#{proDesc},</if>
+				<if test="proContact != null">proContact=#{proContact},</if>
+				<if test="proPhone != null">proPhone=#{proPhone},</if>
+				<if test="proAddress != null">proAddress=#{proAddress},</if>
+				<if test="proFax != null">proFax=#{proFax},</if>
+				<if test="modifyDate != null">modifyDate=#{modifyDate},</if>
+				<if test="modifyBy != null">modifyBy=#{modifyBy},</if>
+				<if test="companyLicPicPath != null">companyLicPicPath=#{companyLicPicPath},</if>
+				<if test="orgCodePicPath != null">orgCodePicPath=#{orgCodePicPath},</if>
+			</set>
+			WHERE (id=#{id})
+	</update>
+	
+	<!-- 根据id获得供应商信息  -->
+	<select id="getProviderById" resultType="Provider">
+		select * from smbms_provider where id=#{id}
+	</select>
+
+	<!-- 根据id删除供应商 -->	
+	<delete id="deleteProviderById">
+		DELETE FROM smbms_provider WHERE id=#{id}
+	</delete>
+	
+	
+	
+<!-- 	<select id="getBillListByProviderId" resultMap="providerBillResult" parameterType="Integer"> -->
+<!-- 		select p.*,b.id as b_id,b.billCode,b.productName,b.totalPrice,b.isPayment from smbms_provider p,smbms_bill b where b.providerId = p.id and p.id = #{id} -->
+<!-- 	</select> -->
+	
+<!-- 	<resultMap type="Provider" id="providerBillResult"> -->
+<!-- 		<collection property="billList" ofType="Bill"> -->
+<!-- 			<id property="id" column="b_id"/> -->
+<!-- 			<result property="billCode" column="billCode"/> -->
+<!-- 			<result property="productName" column="productName"/> -->
+<!-- 			<result property="totalPrice" column="totalPrice"/> -->
+<!-- 			<result property="isPayment" column="isPayment"/> -->
+<!-- 		</collection> -->
+<!-- 	</resultMap> -->
+</mapper>

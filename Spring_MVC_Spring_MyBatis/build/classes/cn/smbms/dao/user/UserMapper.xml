@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.smbms.dao.user.UserMapper">
+
+	<!-- 通过用户编码查询用户  -->
+	<select id="getLoginUser" resultType="User">
+		select * from smbms_user u
+		<trim prefix="where" prefixOverrides="and | or">
+			<if test="userCode != null">
+				and u.userCode = #{userCode}
+			</if>
+		</trim>
+	</select>
+	
+	<!-- 增加用户信息  -->
+	<insert id="add" parameterType="User">
+		INSERT INTO smbms_user (userCode, userName, userPassword, gender, birthday, phone, address, userRole, createdBy, creationDate, idPicPath, workPicPath)
+		VALUES (#{userCode}, #{userName}, #{userPassword}, #{gender}, #{birthday}, #{phone}, #{address}, #{userRole}, #{createdBy}, #{creationDate}, #{idPicPath}, #{workPicPath});
+	</insert>
+	
+	<!-- 根据条件分页查询用户信息 -->
+	<select id="getUserList" resultMap="userList">
+		select u.*,r.roleName from smbms_user u,smbms_role r where u.userRole = r.id
+			<if test="userRole != 0">
+				and u.userRole = #{userRole}
+			</if>
+			<if test="userName != null and userName != ''">
+				and userName like concat('%',#{userName},'%')
+			</if>
+			order by creationDate desc limit #{from},#{pageSize}
+	</select>
+
+	<!-- 用户角色姓名映射  -->
+	<resultMap type="User" id="userList">
+		<result property="userRoleName" column="roleName"/>
+	</resultMap>
+
+	<!-- 根据条件分页查询用户信息 -->
+	<select id="getUserCount" resultType="Integer">
+		select count(*) from smbms_user where 1=1 
+			<if test="userRole != 0">
+				and u.userRole = #{userRole}
+			</if>
+			<if test="userName != null and userName != ''">
+				and userName like concat('%',#{userName},'%')
+			</if>
+	</select>
+
+	<!-- 删除用户通过ID -->
+	<delete id="deleteUserById">
+		delete from smbms_user where id=#{id}
+	</delete>
+	
+	<!-- 通过userId获取user -->
+	<select id="getUserById" resultMap="userList">
+		select u.*,r.roleName from smbms_user u,smbms_role r where u.userRole = r.id and u.id=#{id}
+	</select>
+	
+	<!-- 修改用户信息 -->
+	<update id="modify" parameterType="User">
+		update smbms_user
+			<set>
+				<if test="userCode != null">userCode=#{userCode},</if>
+				<if test="userName != null">userName=#{userName},</if>
+				<if test="userPassword != null">userPassword=#{userPassword},</if>
+				<if test="gender != null">gender=#{gender},</if>
+				<if test="birthday != null">birthday=#{birthday},</if>
+				<if test="phone != null">phone=#{phone},</if>
+				<if test="address != null">address=#{address},</if>
+				<if test="userRole != null">userRole=#{userRole},</if>
+				<if test="modifyBy != null">modifyBy=#{modifyBy},</if>
+				<if test="modifyDate != null">modifyDate=#{modifyDate},</if>
+				<if test="idPicPath != null">idPicPath=#{idPicPath},</if>
+				<if test="workPicPath != null">workPicPath=#{workPicPath},</if>
+			</set>
+			where id = #{id}
+	</update>
+
+	<!-- 修改当前用户密码 -->
+	<update id="updatePwd">
+		UPDATE smbms_user SET userPassword=#{userPassword} WHERE id=#{id}
+	</update>
+
+
+
+
+
+<!-- 	<resultMap type="User" id="userAddressResult"> -->
+<!-- 		<id property="id" column="id"/> -->
+<!-- 		<result property="userCode" column="userCode"/> -->
+<!-- 		<result property="userName" column="userName"/> -->
+<!-- 		<collection property="addressList" ofType="Address"> -->
+<!-- 			<id property="id" column="a_id"/> -->
+<!-- 			<result property="postCode" column="postCode"/> -->
+<!-- 			<result property="tel" column="tel"/> -->
+<!-- 			<result property="contact" column="contact"/> -->
+<!-- 			<result property="addressDesc" column="addressDesc"/> -->
+<!-- 		</collection> -->
+<!-- 	</resultMap> -->
+<!-- 	<select id="getAddressListByUserId" parameterType="Integer" resultMap="userAddressResult"> -->
+<!-- 		select u.*,a.id as a_id,a.contact,a.addressDesc,a.postCode,a.tel from smbms_user u,smbms_address a where u.id = a.userId and u.id=#{id} -->
+<!-- 	</select> -->
+	
+<!-- 	<resultMap type="User" id="userAddressResult"> -->
+<!-- 		<id property="id" column="id"/> -->
+<!-- 		<result property="userCode" column="userCode"/> -->
+<!-- 		<result property="userName" column="userName"/> -->
+<!-- 		<collection property="addressList" ofType="Address" resultMap="addressResult"/> -->
+<!-- 	</resultMap> -->
+	
+	
+<!-- 	<resultMap type="Address" id="addressResult"> -->
+<!-- 		<id property="id" column="a_id"/> -->
+<!-- 		<result property="postCode" column="postCode"/> -->
+<!-- 		<result property="tel" column="tel"/> -->
+<!-- 		<result property="contact" column="contact"/> -->
+<!-- 		<result property="addressDesc" column="addressDesc"/> -->
+<!-- 	</resultMap> -->
+<!-- 	<select id="getAddressListByUserId" parameterType="Integer" resultMap="userAddressResult"> -->
+<!-- 		select u.*,a.id as a_id,a.contact,a.addressDesc,a.postCode,a.tel from smbms_user u left join smbms_address a on u.id = a.userId where u.id = a.userId and u.id=#{id} -->
+<!-- 	</select> -->
+</mapper>
