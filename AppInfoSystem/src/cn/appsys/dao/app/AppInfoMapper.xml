@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.appsys.dao.app.AppInfoMapper">
+	<!-- 带条件查询App信息列表 -->
+	<select id="getAppInfoList" resultType="AppInfo">
+		select a.id, a.softwareName,a.APKName,a.supportROM,a.softwareSize,a.devId,
+				(select devName from dev_user where id = a.devId) as devName,
+				a.status,
+				(select valueName from data_dictionary d where  a.status=d.valueId AND d.typeCode='APP_STATUS') as statusName,
+				a.flatformId,
+				(select valueName from data_dictionary d where  a.flatformId=d.valueId AND d.typeCode='APP_FLATFORM') as flatformName,
+				a.categoryLevel1,
+				(select categoryName from app_category c where  c.id=a.categoryLevel1) as categoryLevel1Name,
+				a.categoryLevel2,
+				(select categoryName from app_category c where  c.id=a.categoryLevel2) as categoryLevel2Name,
+				a.categoryLevel3,
+				(select categoryName from app_category c where  c.id=a.categoryLevel3) as categoryLevel3Name,
+				a.downloads,
+				a.onSaleDate,
+				a.versionId,
+				(select v.versionNo from app_version v where v.id=a.versionId ) as versionNo
+			from  app_info a where 1=1
+		<if test="softwareName != null and softwareName != ''">and softwareName like CONCAT('%',#{softwareName},'%')</if>
+		<if test="status != null">and status=#{status}</if>
+		<if test="flatformId != null">and flatformId=#{flatformId}</if>
+		<if test="categoryLevel1 != null">and categoryLevel1=#{categoryLevel1}</if>
+		<if test="categoryLevel2 != null">and categoryLevel2=#{categoryLevel2}</if>
+		<if test="categoryLevel3 != null">and categoryLevel3=#{categoryLevel3}</if>
+		order by creationDate desc limit #{from},#{pageSize}
+	</select>
+	
+	<!-- 带条件查询App信息数量 -->
+	<select id="getAppInfoCount" resultType="int">
+		SELECT count(*) FROM app_info where 1=1 
+		<if test="softwareName != null and softwareName != ''">and softwareName like CONCAT('%',#{softwareName},'%')</if>
+		<if test="status != null">and status=#{status}</if>
+		<if test="flatformId != null">and flatformId=#{flatformId}</if>
+		<if test="categoryLevel1 != null">and categoryLevel1=#{categoryLevel1}</if>
+		<if test="categoryLevel2 != null">and categoryLevel2=#{categoryLevel2}</if>
+		<if test="categoryLevel3 != null">and categoryLevel3=#{categoryLevel3}</if>
+	</select>
+	
+	<!-- 根据类型查询数据_词典 -->
+	<select id="getDatadictionarylist" resultType="DataDictionary">
+		select * from data_dictionary where typeCode=#{typeCode}
+	</select>
+	
+	<!-- 查询分类列表 -->
+	<select id="getAppCategoryList" resultType="AppCategory">
+		SELECT * FROM app_category where 1=1
+		<if test="parentId == null">and parentId='' OR parentId IS NULL</if>
+		<if test="parentId != null">and parentId=#{parentId}</if>
+	</select>
+	
+	<!-- 通过APKName查询记录数 -->
+	<select id="getAppInfoCountByAPKName" resultType="Integer">
+		SELECT COUNT(*) FROM app_info where APKName=#{APKName}
+	</select>
+	
+	<!-- 新增APP信息 -->
+	<insert id="addAppInfo" parameterType="AppInfo">
+		INSERT INTO app_info (softwareName, APKName, supportROM, interfaceLanguage, softwareSize, devId, appInfo, status, flatformId, categoryLevel3, downloads, creationDate, categoryLevel1, categoryLevel2, logoPicPath,logoLocPath)
+		VALUES (#{softwareName}, #{APKName}, #{supportROM}, #{interfaceLanguage}, #{softwareSize}, #{devId}, #{appInfo}, #{status}, #{flatformId}, #{categoryLevel3}, #{downloads}, #{creationDate}, #{categoryLevel1}, #{categoryLevel2}, #{logoPicPath},#{logoLocPath})
+	</insert>
+	
+	<!-- 通过id查询APP信息 -->
+	<select id="getAppInfoById" resultType="AppInfo">
+		select a.*,
+				(select valueName from data_dictionary d where  a.status=d.valueId AND d.typeCode='APP_STATUS') as statusName,
+				(select valueName from data_dictionary d where  a.flatformId=d.valueId AND d.typeCode='APP_FLATFORM') as flatformName,
+				(select categoryName from app_category c where  c.id=a.categoryLevel1) as categoryLevel1Name,
+				(select categoryName from app_category c where  c.id=a.categoryLevel2) as categoryLevel2Name,
+				(select categoryName from app_category c where  c.id=a.categoryLevel3) as categoryLevel3Name,
+				(select v.versionNo from app_version v where v.id=a.versionId ) as versionNo
+		FROM app_info a where id=#{id};
+	</select>
+	
+	<!-- 通过id修改Path -->
+	<update id="updatePathById">
+		UPDATE app_info SET logoPicPath=NULL, logoLocPath=NULL WHERE id=#{id}
+	</update>
+	
+	<!-- 修改APP信息 -->
+	<update id="updateAppInfo" parameterType="AppInfo">
+		UPDATE app_info 
+		<set>
+			<if test="softwareName != null and softwareName != ''">softwareName=#{softwareName},</if>
+			<if test="supportROM != null and supportROM != ''">supportROM=#{supportROM},</if>
+			<if test="interfaceLanguage != null and interfaceLanguage != ''">interfaceLanguage=#{interfaceLanguage},</if>
+			<if test="softwareSize != null">softwareSize=#{softwareSize},</if>
+			<if test="appInfo != null and appInfo != ''">appInfo=#{appInfo},</if>
+			<if test="status != null">status=#{status},</if>
+			<if test="flatformId != null">flatformId=#{flatformId},</if>
+			<if test="categoryLevel3 != null">categoryLevel3=#{categoryLevel3},</if>
+			<if test="downloads != null">downloads=#{downloads},</if>
+			<if test="modifyBy != null">modifyBy=#{modifyBy},</if>
+			<if test="modifyDate != null and modifyDate != ''">modifyDate=#{modifyDate},</if>
+			<if test="categoryLevel1 != null">categoryLevel1=#{categoryLevel1},</if>
+			<if test="categoryLevel2 != null">categoryLevel2=#{categoryLevel2},</if>
+			<if test="logoPicPath != null and logoPicPath != ''">logoPicPath=#{logoPicPath},</if>
+			<if test="logoLocPath != null and logoLocPath != ''">logoLocPath=#{logoLocPath},</if>
+		</set>
+		 WHERE id=#{id}
+	</update>
+	
+	<!-- 修改APP最新版本信息 -->
+	<update id="updateAppInfoOfVersionIdById" parameterType="AppInfo">
+		UPDATE app_info set versionId=#{versionId} WHERE id=#{id}
+	</update>
+	
+	<!-- 根据ID删除APP信息 -->
+	<delete id="deleteAppInfoById">
+		DELETE FROM app_info where id=#{id}
+	</delete>
+	
+	<!-- 根据ID修改APP状态 -->
+	<update id="updateAppInfoOfStatusById">
+		UPDATE app_info SET status=#{status} where id=#{id}
+	</update>
+</mapper>

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.appsys.dao.user.UserMapper">
+
+	<!-- 通过DevUser查询用户信息 -->
+	<select id="getDevUserByUserCode" resultType="DevUser">
+		SELECT * FROM dev_user where devCode=#{devCode};
+	</select>
+	
+	<!-- 通过userCode查询用户信息 -->
+	<select id="getBackendUserByUserCode" resultType="BackendUser">
+		SELECT u.*,d.valueName as userTypeName FROM `backend_user` u,data_dictionary d where u.userType = d.id and d.typeCode='USER_TYPE' and u.userCode=#{userCode};
+	</select>
+
+</mapper>
