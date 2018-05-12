@@ -159,7 +159,7 @@ public class DevAppController {
 		appInfo.setLogoPicPath(logoPicPath);
 		appInfo.setLogoLocPath(logoLocPath);
 		if(appInfo.getStatus() != 1){
-			request.setAttribute("statusError", " * 检测到您使用开发人员工具修改AAP状态，本次提交失败");
+			request.setAttribute("statusError", " * 检测到您使用开发人员工具修改AAP状态，本次提交失败，请回到主页重新操作");
 			return "developer/appinfoadd";
 		}
 		if(appInfoService.addAppInfo(appInfo)){
@@ -255,7 +255,7 @@ public class DevAppController {
 		appInfo.setLogoLocPath(logoLocPath);
 		if(appInfo.getStatus() != null){
 			if (appInfo.getStatus() != 1) {
-				request.setAttribute("statusError", " * 检测到您使用开发人员工具修改AAP状态，本次修改失败");
+				request.setAttribute("statusError", " * 检测到您使用开发人员工具修改AAP状态，本次修改失败，请回到主页重新操作！");
 				return "developer/appinfomodify";
 			}
 		}

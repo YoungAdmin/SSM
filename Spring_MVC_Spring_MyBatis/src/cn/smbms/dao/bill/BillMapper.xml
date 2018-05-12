@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.smbms.dao.bill.BillMapper">
+
+	<!-- 根据供应商id查询订单数量 -->
+	<select id="getBillCountByPid" resultType="Integer">
+		SELECT count(*) FROM smbms_bill where providerId=#{id}
+	</select>
+	
+	<!-- 根据供应商id删除订单 -->
+	<delete id="deleteBillByPid">
+		DELETE FROM smbms_bill WHERE providerId=#{id}
+	</delete>
+	
+</mapper>
